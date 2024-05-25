@@ -135,9 +135,8 @@ const getAllFromDB = async (query: TUserFilterQuery, options: IPaginationOptions
 };
 
 const changeRole = async (id: string, payload: Role) => {
-    console.log({payload});
     
-    const updateUserStatus = await prisma.user.update({
+    const updateUserRole = await prisma.user.update({
         where: {
             id
         },
@@ -150,7 +149,7 @@ const changeRole = async (id: string, payload: Role) => {
         
     });
 
-    return updateUserStatus;
+    return updateUserRole;
 };
 
 const getMyProfile = async (user: IAuthUser) => {
