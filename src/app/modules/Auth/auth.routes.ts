@@ -1,7 +1,7 @@
 import express from 'express';
 import { AuthController } from './auth.controller';
 import auth from '../../middlewares/auth';
-import { UserRole } from '@prisma/client';
+import { Role } from '@prisma/client';
 
 const router = express.Router();
 
@@ -18,10 +18,10 @@ router.post(
 router.post(
     '/change-password',
     auth(
-        UserRole.SUPER_ADMIN,
-        UserRole.ADMIN,
-        UserRole.DOCTOR,
-        UserRole.PATIENT
+        Role.SUPER_ADMIN,
+        Role.ADMIN,
+        Role.MODERATOR,
+        Role.USER
     ),
     AuthController.changePassword
 );

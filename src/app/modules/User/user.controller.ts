@@ -6,10 +6,12 @@ import pick from "../../../shared/pick";
 import { userFilterableFields } from "./user.constant";
 import { IAuthUser } from "../../interfaces/common";
 import { userService } from "./user.service";
+import { TUserFilterQuery } from "./user.interface";
+import { stringToBoolean } from "../../../helpers/stringToBoolean";
 
 const registerUser = catchAsync(async (req: Request, res: Response) => {
 
-    const result = await userService.registerUser(req);
+    const result = await userService.registerUser(req.body);
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
@@ -22,9 +24,14 @@ const registerUser = catchAsync(async (req: Request, res: Response) => {
 const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
     // console.log(req.query)
     const filters = pick(req.query, userFilterableFields);
+    let query: TUserFilterQuery = {...filters};
+    if (filters && filters?.availability) {
+      const availability = stringToBoolean(filters?.availability as string);
+      query = { ...filters, availability }
+    }
     const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder'])
 
-    const result = await userService.getAllFromDB(filters, options)
+    const result = await userService.getAllFromDB(query, options)
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
@@ -38,7 +45,7 @@ const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
 const changeProfileStatus = catchAsync(async (req: Request, res: Response) => {
 
     const { id } = req.params;
-    const result = await userService.changeProfileStatus(id, req.body)
+    const result = await userService.changeUserRole(id, req.body);
 
     sendResponse(res, {
         statusCode: httpStatus.OK,

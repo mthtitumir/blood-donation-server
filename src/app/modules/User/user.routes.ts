@@ -9,6 +9,7 @@ const router = express.Router();
 
 router.post(
     "/",
+    validateRequest(userValidation.registerUser),
     userController.registerUser
 );
 
@@ -27,14 +28,14 @@ router.get(
 router.patch(
     '/:id/status',
     auth(Role.SUPER_ADMIN, Role.ADMIN),
-    validateRequest(userValidation.updateStatus),
+    // validateRequest(userValidation.updateStatus),
     userController.changeProfileStatus
 );
 
 router.patch(
     "/update-my-profile",
     auth(Role.SUPER_ADMIN, Role.ADMIN, Role.MODERATOR, Role.USER),
-    userController.updateMyProfie
+    userController.updateMyProfile
 
 );
 
