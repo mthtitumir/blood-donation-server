@@ -1,4 +1,3 @@
-import { Role } from "@prisma/client";
 import { z } from "zod";
 
 const registerUser = z.object({
@@ -31,14 +30,29 @@ const registerUser = z.object({
     })
 })
 
-const UpdateMyProfile = z.object({
+const updateMyProfile = z.object({
     body: z.object({
+        name: z.string().optional(),
+        email: z.string().optional(),
+        password: z.string().optional(),
+        bloodType: z.string().optional(),
+        location: z.string().optional(),
+        availability: z.boolean().optional(),
         bio: z.string().optional(),
         age: z.number().optional(),
         lastDonationDate: z.string().optional(),
     })
 })
 
+const changeRole = z.object({
+    body: z.object({
+        role: z.enum(['SUPER_ADMIN', 'ADMIN', 'MODERATOR', 'USER'])
+    })
+})
+
+
 export const userValidation = {
-    registerUser
+    registerUser,
+    updateMyProfile,
+    changeRole
 }

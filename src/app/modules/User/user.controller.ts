@@ -42,10 +42,10 @@ const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
     })
 });
 
-const changeProfileStatus = catchAsync(async (req: Request, res: Response) => {
+const changeRole = catchAsync(async (req: Request, res: Response) => {
 
     const { id } = req.params;
-    const result = await userService.changeUserRole(id, req.body);
+    const result = await userService.changeRole(id, req.body);
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
@@ -83,7 +83,7 @@ const updateMyProfile = catchAsync(async (req: Request & { user?: IAuthUser }, r
 export const userController = {
     registerUser,
     getAllFromDB,
-    changeProfileStatus,
+    changeRole,
     getMyProfile,
     updateMyProfile
 }
