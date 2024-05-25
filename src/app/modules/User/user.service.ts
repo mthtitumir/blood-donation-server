@@ -56,80 +56,12 @@ const registerUser = async (payload: any) => {
     return result;
 };
 
-// const getAllFromDB = async (query: TUserFilterQuery, options: IPaginationOptions) => {
-//     const { page, limit, skip } = paginationHelper.calculatePagination(options);
-//     const { searchTerm, ...filterData } = query;
-
-//     const andConditions: Prisma.UserProfileWhereInput[] = [];
-
-//     //console.log(filterData);
-//     if (query.searchTerm) {
-//         andConditions.push({
-//             OR: userSearchAbleFields.map(field => ({
-//                 [field]: {
-//                     contains: query.searchTerm,
-//                     mode: 'insensitive'
-//                 }
-//             }))
-//         })
-//     };
-
-//     if (Object.keys(filterData).length > 0) {
-//         andConditions.push({
-//             AND: Object.keys(filterData).map(key => ({
-//                 [key]: {
-//                     equals: (filterData as any)[key]
-//                 }
-//             }))
-//         })
-//     };
-
-//     const whereConditions: Prisma.UserProfileWhereInput = andConditions.length > 0 ? { AND: andConditions } : {};
-
-//     const result = await prisma.userProfile.findMany({
-//         where: whereConditions,
-//         skip,
-//         take: limit,
-//         orderBy: options.sortBy && options.sortOrder ? {
-//             [options.sortBy]: options.sortOrder
-//         } : {
-//             createdAt: 'desc'
-//         },
-//         select: {
-//             id: true,
-//             name: true,
-//             bloodType: true,
-//             location: true,
-//             availability: true,
-//             bio: true,
-//             age: true,
-//             lastDonationDate: true,
-//             createdAt: true,
-//             updatedAt: true,
-//         }
-//     });
-
-//     const total = await prisma.userProfile.count({
-//         where: whereConditions
-//     });
-
-//     return {
-//         meta: {
-//             page,
-//             limit,
-//             total
-//         },
-//         data: result
-//     };
-// };
-
 const getAllFromDB = async (query: TUserFilterQuery, options: IPaginationOptions) => {
     const { page, limit, skip } = paginationHelper.calculatePagination(options);
     const { searchTerm, ...filterData } = query;
 
     const andConditions: Prisma.UserProfileWhereInput[] = [];
 
-    // Handle search term
     if (searchTerm) {
         const searchConditions = userSearchAbleFields.map(field => ({
             [field]: {
@@ -142,7 +74,6 @@ const getAllFromDB = async (query: TUserFilterQuery, options: IPaginationOptions
         }
     }
 
-    // Handle filter data
     if (Object.keys(filterData).length > 0) {
         const filterConditions = Object.keys(filterData).map(key => ({
             [key]: {
@@ -154,11 +85,9 @@ const getAllFromDB = async (query: TUserFilterQuery, options: IPaginationOptions
         }
     }
 
-    // Construct where conditions
     const whereConditions: Prisma.UserProfileWhereInput = andConditions.length > 0 ? { AND: andConditions } : {};
 
     try {
-        // Query the database
         const result = await prisma.userProfile.findMany({
             where: whereConditions,
             skip,
@@ -206,7 +135,6 @@ const getAllFromDB = async (query: TUserFilterQuery, options: IPaginationOptions
     }
 };
 
-
 const changeUserRole = async (userId: string, role: Role) => {
     const updateUserStatus = await prisma.user.update({
         where: {
@@ -221,31 +149,30 @@ const changeUserRole = async (userId: string, role: Role) => {
 };
 
 const getMyProfile = async (user: IAuthUser) => {
-
-    const userInfo = await prisma.user.findUniqueOrThrow({
+    const result = await prisma.userProfile.findUniqueOrThrow({
         where: {
-            email: user?.email
+            userId: user?.id,
         },
         select: {
             id: true,
-            name: true,
-            email: true,
-            role: true,
+            user: {
+                select: {
+                    id: true,
+                    email: true,
+                    role: true,
+                }
+            },
             bloodType: true,
             location: true,
             availability: true,
-            userProfile: {
-                select: {
-                    bio: true,
-                    age: true,
-                    lastDonationDate: true,
-                }
-            },
+            bio: true,
+            age: true,
+            lastDonationDate: true,
             createdAt: true,
             updatedAt: true,
         }
     });
-    return userInfo;
+    return result;
 };
 
 const updateMyProfile = async (user: IAuthUser, req: Request) => {

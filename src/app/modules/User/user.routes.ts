@@ -15,7 +15,6 @@ router.post(
 
 router.get(
     '/',
-    // auth(Role.SUPER_ADMIN, Role.ADMIN),
     userController.getAllFromDB
 );
 
@@ -26,7 +25,7 @@ router.get(
 )
 
 router.patch(
-    '/:id/status',
+    '/:id/role',
     auth(Role.SUPER_ADMIN, Role.ADMIN),
     // validateRequest(userValidation.updateStatus),
     userController.changeProfileStatus
@@ -36,7 +35,6 @@ router.patch(
     "/update-my-profile",
     auth(Role.SUPER_ADMIN, Role.ADMIN, Role.MODERATOR, Role.USER),
     userController.updateMyProfile
-
 );
 
 
