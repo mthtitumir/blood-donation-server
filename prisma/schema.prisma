@@ -33,6 +33,7 @@ model Request {
   donorId         String?
   requester       User          @relation("requester", fields: [requesterId], references: [id])
   requesterId     String
+  bloodType       BloodGroup?
   phoneNumber     String
   dateOfDonation  String
   hospitalName    String

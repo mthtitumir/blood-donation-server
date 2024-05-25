@@ -1,4 +1,3 @@
-import { UserStatus } from "@prisma/client";
 import { jwtHelpers } from "../../../helpers/jwtHelpers";
 import prisma from "../../../shared/prisma";
 import * as bcrypt from 'bcrypt'
@@ -43,8 +42,7 @@ const loginUser = async (payload: {
 
     return {
         accessToken,
-        refreshToken,
-        needPasswordChange: userData.needPasswordChange
+        refreshToken
     };
 };
 
@@ -59,12 +57,12 @@ const refreshToken = async (token: string) => {
 
     const userData = await prisma.user.findUniqueOrThrow({
         where: {
-            email: decodedData.email,
-            status: UserStatus.ACTIVE
+            email: decodedData.email
         }
     });
 
     const accessToken = jwtHelpers.generateToken({
+        id: userData.id,
         email: userData.email,
         role: userData.role
     },
@@ -73,8 +71,7 @@ const refreshToken = async (token: string) => {
     );
 
     return {
-        accessToken,
-        needPasswordChange: userData.needPasswordChange
+        accessToken
     };
 
 };
@@ -112,13 +109,12 @@ const changePassword = async (user: any, payload: any) => {
 const forgotPassword = async (payload: { email: string }) => {
     const userData = await prisma.user.findUniqueOrThrow({
         where: {
-            email: payload.email,
-            status: UserStatus.ACTIVE
+            email: payload.email
         }
     });
 
     const resetPassToken = jwtHelpers.generateToken(
-        { email: userData.email, role: userData.role },
+        { id: userData.id, email: userData.email, role: userData.role },
         config.jwt.reset_pass_secret as Secret,
         config.jwt.reset_pass_token_expires_in as string
     )
@@ -142,7 +138,6 @@ const forgotPassword = async (payload: { email: string }) => {
         </div>
         `
     )
-    //console.log(resetPassLink)
 };
 
 const resetPassword = async (token: string, payload: { id: string, password: string }) => {
@@ -150,8 +145,7 @@ const resetPassword = async (token: string, payload: { id: string, password: str
 
     const userData = await prisma.user.findUniqueOrThrow({
         where: {
-            id: payload.id,
-            status: UserStatus.ACTIVE
+            id: payload.id
         }
     });
 
