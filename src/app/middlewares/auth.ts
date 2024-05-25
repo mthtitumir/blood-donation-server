@@ -14,13 +14,16 @@ const auth = (...roles: string[]) => {
             if (!token) {
                 throw new ApiError(httpStatus.UNAUTHORIZED, "You are not authorized!")
             }
-
-            const verifiedUser = jwtHelpers.verifyToken(token, config.jwt.jwt_secret as Secret)
-
-            req.user = verifiedUser;
+            let verifiedUser;
+            try {
+                verifiedUser = jwtHelpers.verifyToken(token, config.jwt.jwt_secret as Secret);
+                req.user = verifiedUser;
+            } catch (error) {
+                throw new Error("Unauthorized error");
+            }
 
             if (roles.length && !roles.includes(verifiedUser.role)) {
-                throw new ApiError(httpStatus.FORBIDDEN, "Forbidden!")
+                throw new ApiError(httpStatus.FORBIDDEN, "Forbidden user!")
             }
             next()
         }
