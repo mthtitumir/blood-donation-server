@@ -1,4 +1,4 @@
-import { Prisma, User, UserRole, UserStatus } from "@prisma/client";
+import { Prisma, User, Role } from "@prisma/client";
 import * as bcrypt from 'bcrypt'
 import prisma from "../../../shared/prisma";
 import { Request } from "express";
@@ -92,10 +92,10 @@ const getAllFromDB = async (params: any, options: IPaginationOptions) => {
         })
     };
 
-    const whereConditons: Prisma.UserWhereInput = andConditions.length > 0 ? { AND: andConditions } : {};
+    const whereConditions: Prisma.UserWhereInput = andConditions.length > 0 ? { AND: andConditions } : {};
 
     const result = await prisma.user.findMany({
-        where: whereConditons,
+        where: whereConditions,
         skip,
         take: limit,
         orderBy: options.sortBy && options.sortOrder ? {
@@ -105,20 +105,26 @@ const getAllFromDB = async (params: any, options: IPaginationOptions) => {
         },
         select: {
             id: true,
+            name: true,
             email: true,
             role: true,
-            needPasswordChange: true,
-            status: true,
+            bloodType: true,
+            location: true,
+            availability: true,
+            userProfile: {
+                select: {
+                    bio: true,
+                    age: true,
+                    lastDonationDate: true,
+                }
+            },
             createdAt: true,
             updatedAt: true,
-            admin: true,
-            patient: true,
-            doctor: true
         }
     });
 
     const total = await prisma.user.count({
-        where: whereConditons
+        where: whereConditions
     });
 
     return {
@@ -131,7 +137,7 @@ const getAllFromDB = async (params: any, options: IPaginationOptions) => {
     };
 };
 
-const changeProfileStatus = async (id: string, status: UserRole) => {
+const changeProfileStatus = async (id: string, status: Role) => {
     const userData = await prisma.user.findUniqueOrThrow({
         where: {
             id
@@ -152,58 +158,34 @@ const getMyProfile = async (user: IAuthUser) => {
 
     const userInfo = await prisma.user.findUniqueOrThrow({
         where: {
-            email: user?.email,
-            status: UserStatus.ACTIVE
+            email: user?.email
         },
         select: {
             id: true,
+            name: true,
             email: true,
-            needPasswordChange: true,
             role: true,
-            status: true
+            bloodType: true,
+            location: true,
+            availability: true,
+            userProfile: {
+                select: {
+                    bio: true,
+                    age: true,
+                    lastDonationDate: true,
+                }
+            },
+            createdAt: true,
+            updatedAt: true,
         }
     });
-
-    let profileInfo;
-
-    if (userInfo.role === UserRole.SUPER_ADMIN) {
-        profileInfo = await prisma.admin.findUnique({
-            where: {
-                email: userInfo.email
-            }
-        })
-    }
-    else if (userInfo.role === UserRole.ADMIN) {
-        profileInfo = await prisma.admin.findUnique({
-            where: {
-                email: userInfo.email
-            }
-        })
-    }
-    else if (userInfo.role === UserRole.DOCTOR) {
-        profileInfo = await prisma.doctor.findUnique({
-            where: {
-                email: userInfo.email
-            }
-        })
-    }
-    else if (userInfo.role === UserRole.PATIENT) {
-        profileInfo = await prisma.patient.findUnique({
-            where: {
-                email: userInfo.email
-            }
-        })
-    }
-
-    return { ...userInfo, ...profileInfo };
+    return userInfo;
 };
 
-
-const updateMyProfie = async (user: IAuthUser, req: Request) => {
+const updateMyProfile = async (user: IAuthUser, req: Request) => {
     const userInfo = await prisma.user.findUniqueOrThrow({
         where: {
             email: user?.email,
-            status: UserStatus.ACTIVE
         }
     });
 
@@ -248,11 +230,8 @@ const updateMyProfie = async (user: IAuthUser, req: Request) => {
 
 export const userService = {
     registerUser,
-    createAdmin,
-    createDoctor,
-    createPatient,
     getAllFromDB,
     changeProfileStatus,
     getMyProfile,
-    updateMyProfie
+    updateMyProfile
 }
