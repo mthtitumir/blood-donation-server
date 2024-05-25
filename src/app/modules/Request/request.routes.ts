@@ -19,18 +19,7 @@ router.post(
   RequestController.AddRequest
 );
 
-router.get(
-  "/",
-  auth(
-    Role.SUPER_ADMIN,
-    Role.ADMIN,
-    Role.MODERATOR,
-    Role.USER
-  ),
-  RequestController.GetMyRequests
-);
-
-router.put(
+router.patch(
   "/:requestId",
   auth(
     Role.SUPER_ADMIN,
@@ -40,6 +29,17 @@ router.put(
   ),
   validateRequest(RequestValidation.UpdateRequest),
   RequestController.UpdateRequest
+);
+
+router.get(
+  "/my-requests",
+  auth(
+    Role.SUPER_ADMIN,
+    Role.ADMIN,
+    Role.MODERATOR,
+    Role.USER
+  ),
+  RequestController.GetMyRequests
 );
 
 export const RequestRoutes = router;

@@ -31,7 +31,6 @@ const UpdateRequest = z.object({
     hospitalName: z.string().optional(),
     hospitalAddress: z.string().optional(),
     reason: z.string().optional(),
-    requestStatus: z.string().optional(),
   }),
 });
 

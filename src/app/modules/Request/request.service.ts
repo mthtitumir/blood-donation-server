@@ -1,11 +1,13 @@
+import httpStatus, { UNAUTHORIZED } from "http-status";
 import prisma from "../../../shared/prisma";
+import ApiError from "../../errors/ApiError";
 
 const AddRequest = async (requesterId: string, payload: any) => {
   const requestData = {
     requesterId,
     ...payload
   };
-  
+
   const result = await prisma.request.create({
     data: requestData
   })
@@ -15,34 +17,14 @@ const AddRequest = async (requesterId: string, payload: any) => {
   };
 };
 
-const GetMyRequests = async (userId: string) => {
-  const user = await prisma.request.findMany({
-    where: {
-      donorId: userId
-    },
-    include: {
-      requester: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          location: true,
-          bloodType: true,
-          availability: true,
-        }
-      }
-    },
-  });
-  return user;
-};
-
-const UpdateRequest = async (donorId: string, requestId: string, payload: any) => {
-  // console.log({donorId, requestId, payload});
-
+const UpdateRequest = async (id: string, requestId: string, payload: any) => {
+  if (payload.requestStatus) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, "You are not authorized!");
+  }
   const result = await prisma.request.update({
     where: {
       id: requestId,
-      donorId,
+      requesterId: id,
     },
     data: {
       ...payload
@@ -50,6 +32,24 @@ const UpdateRequest = async (donorId: string, requestId: string, payload: any) =
   });
   return result;
 }
+
+const GetMyRequests = async (id: string) => {
+  const user = await prisma.request.findMany({
+    where: {
+      requesterId: id
+    },
+    include: {
+      donor: {
+        include: {
+          userProfile: true
+        }
+      }
+    }
+  });
+  return user;
+};
+
+
 
 export const UserService = {
   AddRequest,

@@ -15,17 +15,6 @@ const AddRequest = catchAsync(async (req: Request & {user?: any}, res: Response)
     });
 });
 
-const GetMyRequests = catchAsync(async (req: Request & {user?: any}, res: Response) => { 
-  const result = await UserService.GetMyRequests(req?.user?.id);
-  
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Donation requests retrieved successfully",
-    data: result,
-    });
-});
-
 const UpdateRequest = catchAsync(async (req: Request & {user?: any}, res: Response) => { 
   const result = await UserService.UpdateRequest(req?.user?.id, req.params.requestId, req.body);
   
@@ -36,6 +25,19 @@ const UpdateRequest = catchAsync(async (req: Request & {user?: any}, res: Respon
     data: result,
     });
 });
+
+const GetMyRequests = catchAsync(async (req: Request & {user?: any}, res: Response) => { 
+  const result = await UserService.GetMyRequests(req?.user?.id);
+  
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Your requests retrieved successfully!",
+    data: result,
+    });
+});
+
+
 
 export const RequestController = {
   AddRequest,
