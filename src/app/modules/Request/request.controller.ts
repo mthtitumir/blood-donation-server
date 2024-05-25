@@ -48,11 +48,21 @@ const GetRequestsToMe = catchAsync(async (req: Request & {user?: any}, res: Resp
     });
 });
 
-
+const UpdateStatus = catchAsync(async (req: Request & {user?: any}, res: Response) => { 
+  const result = await UserService.UpdateStatus( req.params.requestId, req.body);
+  
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Donation request status successfully updated",
+    data: result,
+    });
+});
 
 export const RequestController = {
   AddRequest,
   UpdateRequest,
   GetMyRequests,
   GetRequestsToMe,
+  UpdateStatus
 };

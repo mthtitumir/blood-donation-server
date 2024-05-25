@@ -1,6 +1,7 @@
 import httpStatus, { UNAUTHORIZED } from "http-status";
 import prisma from "../../../shared/prisma";
 import ApiError from "../../errors/ApiError";
+import { RequestStatus } from "@prisma/client";
 
 const AddRequest = async (requesterId: string, payload: any) => {
   const requestData = {
@@ -65,9 +66,24 @@ const GetRequestsToMe = async (id: string) => {
   return user;
 };
 
+const UpdateStatus = async ( requestId: string, payload: {requestStatus: RequestStatus}) => {
+  if (!payload.requestStatus) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Only status should be updated!");
+  }
+  const result = await prisma.request.update({
+    where: {
+      id: requestId
+    },
+    data: {
+      ...payload
+    }
+  });
+  return result;
+}
 export const UserService = {
   AddRequest,
   UpdateRequest,
   GetMyRequests,
-  GetRequestsToMe
+  GetRequestsToMe,
+  UpdateStatus
 };

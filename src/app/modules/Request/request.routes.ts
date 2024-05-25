@@ -53,4 +53,14 @@ router.get(
   RequestController.GetRequestsToMe
 );
 
+router.patch(
+  "/:requestId/update-status",
+  auth(
+    Role.SUPER_ADMIN,
+    Role.ADMIN,
+    Role.MODERATOR
+  ),
+  RequestController.UpdateStatus
+);
+
 export const RequestRoutes = router;
