@@ -14,8 +14,7 @@ const loginUser = async (payload: {
 }) => {
     const userData = await prisma.user.findUniqueOrThrow({
         where: {
-            email: payload.email,
-            status: UserStatus.ACTIVE
+            email: payload.email
         }
     });
 
@@ -25,6 +24,7 @@ const loginUser = async (payload: {
         throw new Error("Password incorrect!")
     }
     const accessToken = jwtHelpers.generateToken({
+        id: userData.id,
         email: userData.email,
         role: userData.role
     },
@@ -33,6 +33,7 @@ const loginUser = async (payload: {
     );
 
     const refreshToken = jwtHelpers.generateToken({
+        id: userData.id,
         email: userData.email,
         role: userData.role
     },
