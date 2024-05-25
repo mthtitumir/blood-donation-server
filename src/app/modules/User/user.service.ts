@@ -20,7 +20,7 @@ const registerUser = async (payload: any) => {
         lastDonationDate,
     } = payload;
     const hashedPassword: string = await bcrypt.hash(password, 12);
-    
+
     const userData = {
         email,
         password: hashedPassword,
@@ -56,80 +56,158 @@ const registerUser = async (payload: any) => {
     return result;
 };
 
+// const getAllFromDB = async (query: TUserFilterQuery, options: IPaginationOptions) => {
+//     const { page, limit, skip } = paginationHelper.calculatePagination(options);
+//     const { searchTerm, ...filterData } = query;
+
+//     const andConditions: Prisma.UserProfileWhereInput[] = [];
+
+//     //console.log(filterData);
+//     if (query.searchTerm) {
+//         andConditions.push({
+//             OR: userSearchAbleFields.map(field => ({
+//                 [field]: {
+//                     contains: query.searchTerm,
+//                     mode: 'insensitive'
+//                 }
+//             }))
+//         })
+//     };
+
+//     if (Object.keys(filterData).length > 0) {
+//         andConditions.push({
+//             AND: Object.keys(filterData).map(key => ({
+//                 [key]: {
+//                     equals: (filterData as any)[key]
+//                 }
+//             }))
+//         })
+//     };
+
+//     const whereConditions: Prisma.UserProfileWhereInput = andConditions.length > 0 ? { AND: andConditions } : {};
+
+//     const result = await prisma.userProfile.findMany({
+//         where: whereConditions,
+//         skip,
+//         take: limit,
+//         orderBy: options.sortBy && options.sortOrder ? {
+//             [options.sortBy]: options.sortOrder
+//         } : {
+//             createdAt: 'desc'
+//         },
+//         select: {
+//             id: true,
+//             name: true,
+//             bloodType: true,
+//             location: true,
+//             availability: true,
+//             bio: true,
+//             age: true,
+//             lastDonationDate: true,
+//             createdAt: true,
+//             updatedAt: true,
+//         }
+//     });
+
+//     const total = await prisma.userProfile.count({
+//         where: whereConditions
+//     });
+
+//     return {
+//         meta: {
+//             page,
+//             limit,
+//             total
+//         },
+//         data: result
+//     };
+// };
+
 const getAllFromDB = async (query: TUserFilterQuery, options: IPaginationOptions) => {
     const { page, limit, skip } = paginationHelper.calculatePagination(options);
     const { searchTerm, ...filterData } = query;
 
-    const andConditions: Prisma.UserWhereInput[] = [];
+    const andConditions: Prisma.UserProfileWhereInput[] = [];
 
-    //console.log(filterData);
-    if (query.searchTerm) {
-        andConditions.push({
-            OR: userSearchAbleFields.map(field => ({
-                [field]: {
-                    contains: query.searchTerm,
-                    mode: 'insensitive'
-                }
-            }))
-        })
-    };
-
-    if (Object.keys(filterData).length > 0) {
-        andConditions.push({
-            AND: Object.keys(filterData).map(key => ({
-                [key]: {
-                    equals: (filterData as any)[key]
-                }
-            }))
-        })
-    };
-
-    const whereConditions: Prisma.UserWhereInput = andConditions.length > 0 ? { AND: andConditions } : {};
-
-    const result = await prisma.user.findMany({
-        where: whereConditions,
-        skip,
-        take: limit,
-        orderBy: options.sortBy && options.sortOrder ? {
-            [options.sortBy]: options.sortOrder
-        } : {
-            createdAt: 'desc'
-        },
-        select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true,
-            bloodType: true,
-            location: true,
-            availability: true,
-            userProfile: {
-                select: {
-                    bio: true,
-                    age: true,
-                    lastDonationDate: true,
-                }
-            },
-            createdAt: true,
-            updatedAt: true,
+    // Handle search term
+    if (searchTerm) {
+        const searchConditions = userSearchAbleFields.map(field => ({
+            [field]: {
+                contains: searchTerm,
+                mode: 'insensitive'
+            }
+        }));
+        if (searchConditions.length > 0) {
+            andConditions.push({ OR: searchConditions });
         }
-    });
+    }
 
-    const total = await prisma.user.count({
-        where: whereConditions
-    });
+    // Handle filter data
+    if (Object.keys(filterData).length > 0) {
+        const filterConditions = Object.keys(filterData).map(key => ({
+            [key]: {
+                equals: (filterData as any)[key]
+            }
+        }));
+        if (filterConditions.length > 0) {
+            andConditions.push({ AND: filterConditions });
+        }
+    }
 
-    return {
-        meta: {
-            page,
-            limit,
-            total
-        },
-        data: result
-    };
+    // Construct where conditions
+    const whereConditions: Prisma.UserProfileWhereInput = andConditions.length > 0 ? { AND: andConditions } : {};
+
+    try {
+        // Query the database
+        const result = await prisma.userProfile.findMany({
+            where: whereConditions,
+            skip,
+            take: limit,
+            orderBy: options.sortBy && options.sortOrder ? {
+                [options.sortBy]: options.sortOrder
+            } : {
+                createdAt: 'desc'
+            },
+            select: {
+                id: true,
+                user: {
+                    select: {
+                        id: true,
+                        email: true,
+                        role: true,
+                    }
+                },
+                bloodType: true,
+                location: true,
+                availability: true,
+                bio: true,
+                age: true,
+                lastDonationDate: true,
+                createdAt: true,
+                updatedAt: true,
+            }
+        });
+
+        const total = await prisma.userProfile.count({
+            where: whereConditions
+        });
+
+        return {
+            meta: {
+                page,
+                limit,
+                total
+            },
+            data: result
+        };
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        throw new Error("Unable to fetch data from the database.");
+    }
 };
 
-const changeUserRole = async (userId: string, role: Role ) => {
+
+const changeUserRole = async (userId: string, role: Role) => {
     const updateUserStatus = await prisma.user.update({
         where: {
             id: userId

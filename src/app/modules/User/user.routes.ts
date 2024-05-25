@@ -15,7 +15,7 @@ router.post(
 
 router.get(
     '/',
-    auth(Role.SUPER_ADMIN, Role.ADMIN),
+    // auth(Role.SUPER_ADMIN, Role.ADMIN),
     userController.getAllFromDB
 );
 
