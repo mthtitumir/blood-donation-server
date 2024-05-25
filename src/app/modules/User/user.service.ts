@@ -1,7 +1,6 @@
 import { Prisma, Role } from "@prisma/client";
 import * as bcrypt from 'bcrypt'
 import prisma from "../../../shared/prisma";
-import { Request } from "express";
 import { IPaginationOptions } from "../../interfaces/pagination";
 import { paginationHelper } from "../../../helpers/paginationHelper";
 import { userSearchAbleFields } from "./user.constant";
