@@ -49,10 +49,25 @@ const GetMyRequests = async (id: string) => {
   return user;
 };
 
-
+const GetRequestsToMe = async (id: string) => {
+  const user = await prisma.request.findMany({
+    where: {
+      donorId: id
+    },
+    include: {
+      donor: {
+        include: {
+          userProfile: true
+        }
+      }
+    }
+  });
+  return user;
+};
 
 export const UserService = {
   AddRequest,
+  UpdateRequest,
   GetMyRequests,
-  UpdateRequest
+  GetRequestsToMe
 };

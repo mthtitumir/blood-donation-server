@@ -37,10 +37,22 @@ const GetMyRequests = catchAsync(async (req: Request & {user?: any}, res: Respon
     });
 });
 
+const GetRequestsToMe = catchAsync(async (req: Request & {user?: any}, res: Response) => { 
+  const result = await UserService.GetRequestsToMe(req?.user?.id);
+  
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "All requests to you successfully!",
+    data: result,
+    });
+});
+
 
 
 export const RequestController = {
   AddRequest,
+  UpdateRequest,
   GetMyRequests,
-  UpdateRequest
+  GetRequestsToMe,
 };

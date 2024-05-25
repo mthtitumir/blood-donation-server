@@ -42,4 +42,15 @@ router.get(
   RequestController.GetMyRequests
 );
 
+router.get(
+  "/requests-to-me",
+  auth(
+    Role.SUPER_ADMIN,
+    Role.ADMIN,
+    Role.MODERATOR,
+    Role.USER
+  ),
+  RequestController.GetRequestsToMe
+);
+
 export const RequestRoutes = router;
