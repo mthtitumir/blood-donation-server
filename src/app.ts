@@ -8,27 +8,16 @@ import cookieParser from 'cookie-parser';
 // import cron from 'node-cron'
 
 const app: Application = express();
-app.use(cors());
+app.use(cors({ origin: ['http://localhost:3000'], credentials: true }));
 app.use(cookieParser());
 
 //parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
-
-// cron.schedule('* * * * *', () => {
-//     try {
-//         AppointmentService.cancelUnpaidAppointments();
-//     }
-//     catch (err) {
-//         console.error(err);
-//     }
-// });
-
 app.get('/', (req: Request, res: Response) => {
     res.send({
-        Message: "Ph health care server.."
+        Message: "Blood & Connect server"
     })
 });
 

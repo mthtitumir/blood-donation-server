@@ -105,6 +105,7 @@ const getAllFromDB = async (query: TUserFilterQuery, options: IPaginationOptions
                         role: true,
                     }
                 },
+                name: true,
                 bloodType: true,
                 location: true,
                 availability: true,
@@ -152,6 +153,34 @@ const changeRole = async (id: string, payload: Role) => {
     return updateUserRole;
 };
 
+const getSingleProfile = async (id: string) => {
+    const result = await prisma.userProfile.findUniqueOrThrow({
+        where: {
+            userId: id,
+        },
+        select: {
+            id: true,
+            user: {
+                select: {
+                    id: true,
+                    email: true,
+                    role: true,
+                }
+            },
+            name: true,
+            bloodType: true,
+            location: true,
+            availability: true,
+            bio: true,
+            age: true,
+            lastDonationDate: true,
+            createdAt: true,
+            updatedAt: true,
+        }
+    });
+    return result;
+};
+
 const getMyProfile = async (user: IAuthUser) => {
     const result = await prisma.userProfile.findUniqueOrThrow({
         where: {
@@ -166,6 +195,7 @@ const getMyProfile = async (user: IAuthUser) => {
                     role: true,
                 }
             },
+            name: true,
             bloodType: true,
             location: true,
             availability: true,
@@ -195,6 +225,7 @@ export const userService = {
     registerUser,
     getAllFromDB,
     changeRole,
+    getSingleProfile,
     getMyProfile,
     updateMyProfile
 }
