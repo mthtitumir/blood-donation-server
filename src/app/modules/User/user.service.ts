@@ -156,7 +156,7 @@ const changeRole = async (id: string, payload: Role) => {
 const getSingleProfile = async (id: string) => {
     const result = await prisma.userProfile.findUniqueOrThrow({
         where: {
-            userId: id,
+            id,
         },
         select: {
             id: true,

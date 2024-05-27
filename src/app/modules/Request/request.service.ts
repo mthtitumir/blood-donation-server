@@ -18,6 +18,12 @@ const AddRequest = async (requesterId: string, payload: any) => {
   };
 };
 
+const GetAllRequests = async () => {
+  //need more work on filter and search
+  const result = await prisma.request.findMany();
+  return result;
+};
+
 const UpdateRequest = async (id: string, requestId: string, payload: any) => {
   if (payload.requestStatus) {
     throw new ApiError(httpStatus.UNAUTHORIZED, "You are not authorized!");
@@ -82,6 +88,7 @@ const UpdateStatus = async ( requestId: string, payload: {requestStatus: Request
 }
 export const UserService = {
   AddRequest,
+  GetAllRequests,
   UpdateRequest,
   GetMyRequests,
   GetRequestsToMe,

@@ -15,6 +15,17 @@ const AddRequest = catchAsync(async (req: Request & {user?: any}, res: Response)
     });
 });
 
+const GetAllRequests = catchAsync(async (req: Request & {user?: any}, res: Response) => { 
+  const result = await UserService.GetAllRequests();
+  
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "All requests successfully retrieved!",
+    data: result,
+    });
+});
+
 const UpdateRequest = catchAsync(async (req: Request & {user?: any}, res: Response) => { 
   const result = await UserService.UpdateRequest(req?.user?.id, req.params.requestId, req.body);
   
@@ -61,6 +72,7 @@ const UpdateStatus = catchAsync(async (req: Request & {user?: any}, res: Respons
 
 export const RequestController = {
   AddRequest,
+  GetAllRequests,
   UpdateRequest,
   GetMyRequests,
   GetRequestsToMe,

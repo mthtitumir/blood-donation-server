@@ -9,8 +9,9 @@ import httpStatus from "http-status";
 const auth = (...roles: string[]) => {
     return async (req: Request & { user?: any }, res: Response, next: NextFunction) => {
         try {
-            const token = req.headers.authorization
-
+            const token = req.headers.authorization;
+            
+            
             if (!token) {
                 throw new ApiError(httpStatus.UNAUTHORIZED, "You are not authorized!")
             }
@@ -21,6 +22,7 @@ const auth = (...roles: string[]) => {
             } catch (error) {
                 throw new Error("Unauthorized error");
             }
+            // console.log({token, verifiedUser});
 
             if (roles.length && !roles.includes(verifiedUser.role)) {
                 throw new ApiError(httpStatus.FORBIDDEN, "Forbidden user!")

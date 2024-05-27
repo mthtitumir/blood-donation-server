@@ -19,15 +19,15 @@ router.get(
 );
 
 router.get(
-    '/:id',
-    auth(Role.SUPER_ADMIN, Role.ADMIN, Role.MODERATOR, Role.USER),
-    userController.getSingleProfile
-)
-
-router.get(
     '/me',
     auth(Role.SUPER_ADMIN, Role.ADMIN, Role.MODERATOR, Role.USER),
     userController.getMyProfile
+)
+
+router.get(
+    '/:id',
+    // auth(Role.SUPER_ADMIN, Role.ADMIN, Role.MODERATOR, Role.USER),
+    userController.getSingleProfile
 )
 
 router.patch(

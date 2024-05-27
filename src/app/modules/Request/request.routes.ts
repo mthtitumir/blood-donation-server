@@ -19,6 +19,16 @@ router.post(
   RequestController.AddRequest
 );
 
+router.get(
+  "/",
+  auth(
+    Role.SUPER_ADMIN,
+    Role.ADMIN,
+    Role.MODERATOR,
+  ),
+  RequestController.GetAllRequests
+);
+
 router.patch(
   "/:requestId",
   auth(
