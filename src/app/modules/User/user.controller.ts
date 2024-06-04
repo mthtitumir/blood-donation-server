@@ -21,7 +21,18 @@ const registerUser = catchAsync(async (req: Request, res: Response) => {
 });
 
 
-const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
+const getAllUserFromDB = catchAsync(async (req: Request, res: Response) => {
+    const result = await userService.getAllUserFromDB();
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Users data fetched!",
+        data: result,
+    })
+});
+
+const getAllDonorFromDB = catchAsync(async (req: Request, res: Response) => {
     // console.log(req.query)
     const filters = pick(req.query, userFilterableFields);
     let query: TUserFilterQuery = {...filters};
@@ -31,12 +42,12 @@ const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
     }
     const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder'])
 
-    const result = await userService.getAllFromDB(query, options)
+    const result = await userService.getAllDonorFromDB(query, options)
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: "Users data fetched!",
+        message: "Donors data fetched!",
         meta: result.meta,
         data: result.data
     })
@@ -95,7 +106,8 @@ const updateMyProfile = catchAsync(async (req: Request & { user?: IAuthUser }, r
 
 export const userController = {
     registerUser,
-    getAllFromDB,
+    getAllUserFromDB,
+    getAllDonorFromDB,
     changeRole,
     getSingleProfile,
     getMyProfile,

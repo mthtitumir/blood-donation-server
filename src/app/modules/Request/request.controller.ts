@@ -65,7 +65,7 @@ const UpdateStatus = catchAsync(async (req: Request & {user?: any}, res: Respons
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Donation request status successfully updated",
+    message: "Request status successfully updated",
     data: result,
     });
 });

@@ -24,6 +24,8 @@ const registerUser = async (payload: any) => {
         email,
         password: hashedPassword,
     };
+    console.log(payload);
+
 
     const profileData = {
         name,
@@ -39,7 +41,7 @@ const registerUser = async (payload: any) => {
             data: userData,
         });
         const createdUserProfileData = await transactionClient.userProfile.create({
-            data: { ...profileData, userId: createdUserData.id },
+            data: { ...profileData, userId: createdUserData?.id },
             include: {
                 user: {
                     select: {
@@ -55,12 +57,50 @@ const registerUser = async (payload: any) => {
     return result;
 };
 
-const getAllFromDB = async (query: TUserFilterQuery, options: IPaginationOptions) => {
+const getAllUserFromDB = async () => {
+    try {
+        const result = await prisma.userProfile.findMany({
+            select: {
+                id: true,
+                user: {
+                    select: {
+                        id: true,
+                        email: true,
+                        role: true,
+                    }
+                },
+                name: true,
+                bloodType: true,
+                location: true,
+                availability: true,
+                bio: true,
+                age: true,
+                lastDonationDate: true,
+                createdAt: true,
+                updatedAt: true,
+            }
+        });
+
+        return result;
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        throw new Error("Unable to fetch data from the database.");
+    }
+};
+
+const getAllDonorFromDB = async (query: TUserFilterQuery, options: IPaginationOptions) => {
     const { page, limit, skip } = paginationHelper.calculatePagination(options);
     const { searchTerm, ...filterData } = query;
 
     const andConditions: Prisma.UserProfileWhereInput[] = [];
-
+    andConditions.push({
+        user: {
+            role: {
+                notIn: ['ADMIN', 'SUPER_ADMIN', 'MODERATOR']
+            },
+            isBanned: false,
+        }
+    });
     if (searchTerm) {
         const searchConditions = userSearchAbleFields.map(field => ({
             [field]: {
@@ -136,7 +176,7 @@ const getAllFromDB = async (query: TUserFilterQuery, options: IPaginationOptions
 };
 
 const changeRole = async (id: string, payload: Role) => {
-    
+
     const updateUserRole = await prisma.user.update({
         where: {
             id
@@ -147,7 +187,7 @@ const changeRole = async (id: string, payload: Role) => {
             email: true,
             role: true,
         }
-        
+
     });
 
     return updateUserRole;
@@ -167,6 +207,7 @@ const getSingleProfile = async (id: string) => {
                     role: true,
                 }
             },
+            userId: true,
             name: true,
             bloodType: true,
             location: true,
@@ -217,13 +258,14 @@ const updateMyProfile = async (user: IAuthUser, payload: any) => {
         data: payload
     })
 
-    return {...payload};
-}
+    return { ...payload };
+};
 
 
 export const userService = {
     registerUser,
-    getAllFromDB,
+    getAllUserFromDB,
+    getAllDonorFromDB,
     changeRole,
     getSingleProfile,
     getMyProfile,

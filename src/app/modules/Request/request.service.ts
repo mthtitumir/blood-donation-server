@@ -20,7 +20,20 @@ const AddRequest = async (requesterId: string, payload: any) => {
 
 const GetAllRequests = async () => {
   //need more work on filter and search
-  const result = await prisma.request.findMany();
+  const result = await prisma.request.findMany({
+    include: {
+      donor: {
+        select: {
+          userProfile: true
+        }
+      },
+      requester: {
+        select: {
+          userProfile: true
+        }
+      },
+    }
+  });
   return result;
 };
 
@@ -63,16 +76,21 @@ const GetRequestsToMe = async (id: string) => {
     },
     include: {
       donor: {
-        include: {
+        select: {
           userProfile: true
         }
-      }
+      },
+      requester: {
+        select: {
+          userProfile: true
+        }
+      },
     }
   });
   return user;
 };
 
-const UpdateStatus = async ( requestId: string, payload: {requestStatus: RequestStatus}) => {
+const UpdateStatus = async (requestId: string, payload: { requestStatus: RequestStatus }) => {
   if (!payload.requestStatus) {
     throw new ApiError(httpStatus.UNAUTHORIZED, "Only status should be updated!");
   }
@@ -86,6 +104,7 @@ const UpdateStatus = async ( requestId: string, payload: {requestStatus: Request
   });
   return result;
 }
+
 export const UserService = {
   AddRequest,
   GetAllRequests,

@@ -18,6 +18,7 @@ model User {
   email       String       @unique
   password    String
   role        Role         @default(USER)
+  isBanned    Boolean      @default(false)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   userProfile UserProfile?
@@ -34,6 +35,7 @@ model Request {
   requester       User          @relation("requester", fields: [requesterId], references: [id])
   requesterId     String
   bloodType       BloodGroup?
+  quantity        Int?
   phoneNumber     String
   dateOfDonation  String
   hospitalName    String
@@ -76,7 +78,7 @@ enum BloodGroup {
 
 enum RequestStatus {
   PENDING
-  APPROVED
+  ACCEPTED
   REJECTED
 }
 

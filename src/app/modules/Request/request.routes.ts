@@ -68,7 +68,8 @@ router.patch(
   auth(
     Role.SUPER_ADMIN,
     Role.ADMIN,
-    Role.MODERATOR
+    Role.MODERATOR,
+    Role.USER
   ),
   RequestController.UpdateStatus
 );

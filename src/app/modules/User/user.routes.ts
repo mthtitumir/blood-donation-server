@@ -15,7 +15,13 @@ router.post(
 
 router.get(
     '/',
-    userController.getAllFromDB
+    auth(Role.SUPER_ADMIN, Role.ADMIN, Role.MODERATOR),
+    userController.getAllUserFromDB
+);
+
+router.get(
+    '/all-donors',
+    userController.getAllDonorFromDB
 );
 
 router.get(
