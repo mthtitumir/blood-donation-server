@@ -67,6 +67,7 @@ const getAllUserFromDB = async () => {
                         id: true,
                         email: true,
                         role: true,
+                        isBanned: true
                     }
                 },
                 name: true,
@@ -193,6 +194,25 @@ const changeRole = async (id: string, payload: Role) => {
     return updateUserRole;
 };
 
+const changeStatus = async (id: string, payload: {isBanned: boolean}) => {
+
+    const updateUserRole = await prisma.user.update({
+        where: {
+            id
+        },
+        data: payload,
+        select: {
+            id: true,
+            email: true,
+            role: true,
+            isBanned: true,
+        }
+
+    });
+
+    return updateUserRole;
+};
+
 const getSingleProfile = async (id: string) => {
     const result = await prisma.userProfile.findUniqueOrThrow({
         where: {
@@ -267,6 +287,7 @@ export const userService = {
     getAllUserFromDB,
     getAllDonorFromDB,
     changeRole,
+    changeStatus,
     getSingleProfile,
     getMyProfile,
     updateMyProfile

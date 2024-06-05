@@ -61,11 +61,23 @@ const changeRole = catchAsync(async (req: Request, res: Response) => {
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: "Users profile status changed!",
+        message: "Users role changed!",
         data: result
     })
 });
 
+const changeStatus = catchAsync(async (req: Request, res: Response) => {
+
+    const { id } = req.params;
+    const result = await userService.changeStatus(id, req.body);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Users profile status changed!",
+        data: result
+    })
+});
 
 const getSingleProfile = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
     const id = req?.params?.id;
@@ -109,6 +121,7 @@ export const userController = {
     getAllUserFromDB,
     getAllDonorFromDB,
     changeRole,
+    changeStatus,
     getSingleProfile,
     getMyProfile,
     updateMyProfile

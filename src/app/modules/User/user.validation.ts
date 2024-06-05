@@ -50,9 +50,16 @@ const changeRole = z.object({
     })
 })
 
+const changeStatus = z.object({
+    body: z.object({
+        isBanned: z.boolean()
+    })
+})
+
 
 export const userValidation = {
     registerUser,
     updateMyProfile,
-    changeRole
+    changeRole,
+    changeStatus
 }

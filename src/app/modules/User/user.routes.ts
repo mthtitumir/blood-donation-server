@@ -44,6 +44,13 @@ router.patch(
 );
 
 router.patch(
+    '/:id/status',
+    auth(Role.SUPER_ADMIN, Role.ADMIN),
+    validateRequest(userValidation.changeStatus),
+    userController.changeStatus
+);
+
+router.patch(
     "/update-my-profile",
     auth(Role.SUPER_ADMIN, Role.ADMIN, Role.MODERATOR, Role.USER),
     validateRequest(userValidation.updateMyProfile),
