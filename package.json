@@ -1,13 +1,16 @@
 {
-  "name": "Blood & Connect Server",
+  "name": "blood-and-connect-server",
   "version": "1.0.0",
   "main": "index.js",
   "repository": "https://github.com/mthtitumir/blood-donation-server",
   "author": "M. T. H. Titumir <mthtitumir1@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "build": "tsc",
+    "prod": "node ./dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "seed": "ts-node-dev --respawn --transpile-only prisma/seed.ts"
+    "seed": "ts-node-dev --respawn --transpile-only prisma/seed.ts",
+    "postinstall": "prisma generate"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

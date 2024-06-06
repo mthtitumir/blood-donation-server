@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.RequestRoutes = void 0;
+const express_1 = __importDefault(require("express"));
+const request_controller_1 = require("./request.controller");
+const auth_1 = __importDefault(require("../../middlewares/auth"));
+const request_validation_1 = require("./request.validation");
+const validateRequest_1 = __importDefault(require("../../middlewares/validateRequest"));
+const client_1 = require("@prisma/client");
+const router = express_1.default.Router();
+router.post("/", (0, auth_1.default)(client_1.Role.SUPER_ADMIN, client_1.Role.ADMIN, client_1.Role.MODERATOR, client_1.Role.USER), (0, validateRequest_1.default)(request_validation_1.RequestValidation.AddRequest), request_controller_1.RequestController.AddRequest);
+router.get("/", (0, auth_1.default)(client_1.Role.SUPER_ADMIN, client_1.Role.ADMIN, client_1.Role.MODERATOR), request_controller_1.RequestController.GetAllRequests);
+router.patch("/:requestId", (0, auth_1.default)(client_1.Role.SUPER_ADMIN, client_1.Role.ADMIN, client_1.Role.MODERATOR, client_1.Role.USER), (0, validateRequest_1.default)(request_validation_1.RequestValidation.UpdateRequest), request_controller_1.RequestController.UpdateRequest);
+router.get("/my-requests", (0, auth_1.default)(client_1.Role.SUPER_ADMIN, client_1.Role.ADMIN, client_1.Role.MODERATOR, client_1.Role.USER), request_controller_1.RequestController.GetMyRequests);
+router.get("/requests-to-me", (0, auth_1.default)(client_1.Role.SUPER_ADMIN, client_1.Role.ADMIN, client_1.Role.MODERATOR, client_1.Role.USER), request_controller_1.RequestController.GetRequestsToMe);
+router.patch("/:requestId/update-status", (0, auth_1.default)(client_1.Role.SUPER_ADMIN, client_1.Role.ADMIN, client_1.Role.MODERATOR, client_1.Role.USER), request_controller_1.RequestController.UpdateStatus);
+exports.RequestRoutes = router;

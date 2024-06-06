@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express"
 import httpStatus from "http-status"
 
 const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
-    console.log({error: err});
+    // console.log({error: err});
     
     let statusCode = httpStatus.INTERNAL_SERVER_ERROR;
     let success = false;

@@ -24,7 +24,7 @@ const registerUser = async (payload: any) => {
         email,
         password: hashedPassword,
     };
-    console.log(payload);
+    // console.log(payload);
 
 
     const profileData = {

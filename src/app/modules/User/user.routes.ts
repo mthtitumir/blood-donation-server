@@ -38,7 +38,7 @@ router.get(
 
 router.patch(
     '/:id/role',
-    auth(Role.SUPER_ADMIN, Role.ADMIN),
+    // auth(Role.SUPER_ADMIN, Role.ADMIN),
     validateRequest(userValidation.changeRole),
     userController.changeRole
 );

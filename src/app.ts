@@ -4,13 +4,24 @@ import router from './app/routes';
 import httpStatus from 'http-status';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import cookieParser from 'cookie-parser';
-// import { AppointmentService } from './app/modules/Appointment/appointment.service';
-// import cron from 'node-cron'
 
 const app: Application = express();
-app.use(cors({ origin: ['http://localhost:3000'], credentials: true }));
 app.use(cookieParser());
+const allowedOrigins = ['http://localhost:3000', 'https://blood-donation-client-black.vercel.app', 'https://blood-donation-client-black.vercel.app/'];
 
+const corsOptions = {
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+};
+
+app.use(cors(corsOptions));
 //parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
