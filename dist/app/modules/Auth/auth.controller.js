@@ -22,7 +22,8 @@ const loginUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void
     const { refreshToken } = result;
     res.cookie('refreshToken', refreshToken, {
         secure: false,
-        httpOnly: true
+        httpOnly: true,
+        maxAge: 2592000000
     });
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
